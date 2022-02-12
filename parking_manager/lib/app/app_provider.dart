@@ -13,9 +13,13 @@ class AppProvider extends StatelessWidget {
         BlocProvider.of<SharedPreferencesConfig>(context);
     sharedPreferencesConfig.appSettings();
 
+    final appBloc = AppBloc(sharedPreferencesConfig: sharedPreferencesConfig);
+
     return BlocProvider<AppBloc>(
-        create: (context) =>
-            AppBloc(sharedPreferencesConfig: sharedPreferencesConfig),
-        child: const HomeProvider());
+      create: (context) => appBloc,
+      child: HomeProvider(
+        appBloc: appBloc,
+      ),
+    );
   }
 }

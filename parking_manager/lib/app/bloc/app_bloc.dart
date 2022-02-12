@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import '../config/shared_preferences_config.dart';
+import '../features/add_parking/model/parking.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -10,6 +11,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final SharedPreferencesConfig? sharedPreferencesConfig;
 
   AppBloc({this.sharedPreferencesConfig}) : super(AppInitial());
+
+  List<Parking> parkingLots = [];
 
   @override
   Stream<AppState> mapEventToState(
