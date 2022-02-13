@@ -10,7 +10,7 @@ class AddParkingProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppBloc>(
-        create: (context) => appBloc, child: const AddParkingPage());
+    return BlocProvider<AppBloc>.value(
+        value: appBloc, child: const AddParkingPage());
   }
 }

@@ -40,8 +40,15 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   String valueThirdInput = '';
   final _formKey = GlobalKey<FormState>();
   @override
+  void initState() {
+    final appBloc = BlocProvider.of<AppBloc>(context);
+    appBloc.add(MakeAddInital());
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -55,130 +62,174 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     : '',
             style: const TextStyle(color: Color.fromARGB(255, 223, 13, 9)),
           ),
-          Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(
-                  height: 50,
-                ),
-                _title(title: widget.title1),
-                _textFormField(
-                    hintText: widget.hintText1,
-                    textInputType: widget.keyboardTypes.elementAt(0),
-                    valueTextOption: 'first'),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 10,
-                ),
-                _title(title: widget.title2),
-                const SizedBox(
-                  height: 10,
-                ),
-                _textFormField(
-                    hintText: widget.hintText2,
-                    textInputType: widget.keyboardTypes.elementAt(1),
-                    valueTextOption: 'second'),
-                widget.title3 != null
-                    ? Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height / 10,
-                          ),
-                          _title(title: widget.title3!),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          _textFormField(
-                              hintText: widget.hintText3!,
-                              textInputType: widget.keyboardTypes.elementAt(2),
-                              valueTextOption: 'third'),
-                        ],
-                      )
-                    : Container(),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height / 10),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      fixedSize: const Size(320, 57),
-                      primary: Colors.white,
-                      backgroundColor: mainColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
+          BlocBuilder<AppBloc, AppState>(
+            builder: (context, state) {
+              if (state is AddPakingToListAdded) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      content:
+                          Text("Estacionamento Salvo, adicione carros nele!"),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate() &&
-                          widget.value != 'vazio') {
-                        if (widget.option == TypeOperationForm.addParking) {
-                          try {
-                            widget.listNanme.add(
-                              Parking(
-                                  coutParkingSpaces:
-                                      int.parse(valueSecondInput),
-                                  name: valueFirstInput,
-                                  cars: <Car>[]),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text(
-                                    "Estacionamento Salvo, adicione carros nele!"),
-                              ),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                    "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
-                              ),
-                            );
-                          }
-                        } else if (widget.option == TypeOperationForm.addCar) {
-                          try {
-                            var parking = appBloc.parkingLots.firstWhere(
-                                (element) => element.name == widget.value);
-                            parking.cars.add(
-                              Car(
-                                  checkIn: DateTime.now(),
-                                  modelAndColor: valueFirstInput,
-                                  licensePlate: valueSecondInput,
-                                  parkedIn: int.parse(valueThirdInput),
-                                  parkingName: parking.name),
-                            );
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text("Carro salvo no estacionamento"),
-                              ),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                    "Falha ao adicionar carro, reveja as informações e tente novamente"),
-                              ),
-                            );
-                          }
-                        }
-                      }
-                    },
-                    child: const Text(
-                      'Salvar',
-                      style: TextStyle(
-                        fontSize: 22,
-                      ),
-                      textAlign: TextAlign.center,
+                  );
+                });
+              } else if (state is AddPakingToListError) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text(
+                          "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
                     ),
-                  ),
-                )
-              ],
-            ),
-          ),
+                  );
+                });
+              } else if (state is AddCarToParkingListAdded) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text("Carro salvo no estacionamento"),
+                    ),
+                  );
+                });
+              } else if (state is AddCarToParkingListError) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text(
+                          "Falha ao adicionar carro, reveja as informações e tente novamente"),
+                    ),
+                  );
+                });
+              } else if (state is AddPakingToListErrorAlreadyExist) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text(
+                          "Falha ao adicionar estacionamento, estacionamento já existe, tente trocar o nome!"),
+                    ),
+                  );
+                });
+              }
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    _title(title: widget.title1),
+                    _textFormField(
+                        hintText: widget.hintText1,
+                        textInputType: widget.keyboardTypes.elementAt(0),
+                        valueTextOption: 'first'),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 10,
+                    ),
+                    _title(title: widget.title2),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _textFormField(
+                        hintText: widget.hintText2,
+                        textInputType: widget.keyboardTypes.elementAt(1),
+                        valueTextOption: 'second'),
+                    widget.title3 != null
+                        ? Column(
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height / 10,
+                              ),
+                              _title(title: widget.title3!),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              _textFormField(
+                                  hintText: widget.hintText3!,
+                                  textInputType:
+                                      widget.keyboardTypes.elementAt(2),
+                                  valueTextOption: 'third'),
+                            ],
+                          )
+                        : Container(),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height / 10),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          fixedSize: const Size(320, 57),
+                          primary: Colors.white,
+                          backgroundColor: mainColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate() &&
+                              widget.value != 'vazio') {
+                            if (widget.option == TypeOperationForm.addParking) {
+                              try {
+                                appBloc.add(
+                                  AddPakingToList(
+                                    parking: Parking(
+                                        coutParkingSpaces:
+                                            int.parse(valueSecondInput),
+                                        name: valueFirstInput,
+                                        cars: <Car>[]),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                        "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
+                                  ),
+                                );
+                              }
+                            } else if (widget.option ==
+                                TypeOperationForm.addCar) {
+                              try {
+                                appBloc.add(
+                                  AddCarToParkingList(
+                                      car: Car(
+                                          checkIn: DateTime.now(),
+                                          modelAndColor: valueFirstInput,
+                                          licensePlate: valueSecondInput,
+                                          parkedIn: int.parse(valueThirdInput),
+                                          parkingName: widget.value),
+                                      value: widget.value),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                        "Falha ao adicionar carro, reveja as informações e tente novamente"),
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        child: const Text(
+                          'Salvar',
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          )
         ],
       ),
     );

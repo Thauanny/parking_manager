@@ -20,48 +20,53 @@ class _AddCarPageState extends State<AddCarPage> {
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: mainColor,
-        title: Text('Adicionar um carro ao um estacionamento'),
-      ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0, left: 85, right: 85),
-            child: DropdownButton<String>(
-              isExpanded: false,
-              hint: const Text('Escolha o estacionamento'),
-              value: _value == 'vazio' ? null : _value,
-              onChanged: (newValue) {
-                setState(() {
-                  _value = newValue;
-                });
-              },
-              items: appBloc.parkingLots.map((Parking value) {
-                return DropdownMenuItem<String>(
-                  value: value.name,
-                  child: Text(value.name),
-                );
-              }).toList(),
-            ),
+        appBar: AppBar(
+          backgroundColor: mainColor,
+          title: Text('Adicionar um carro ao um estacionamento'),
+        ),
+        body: WillPopScope(
+          onWillPop: () {
+            appBloc.add(MakeAddInital());
+            return Future.value(true);
+          },
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, left: 85, right: 85),
+                child: DropdownButton<String>(
+                  isExpanded: false,
+                  hint: const Text('Escolha o estacionamento'),
+                  value: _value == 'vazio' ? null : _value,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _value = newValue;
+                    });
+                  },
+                  items: appBloc.parkingLots.map((Parking value) {
+                    return DropdownMenuItem<String>(
+                      value: value.name,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+              TextFormFielDCustom(
+                  value: _value,
+                  title1: 'Modelo e Cor do carro (Fusca - Branco)',
+                  hintText1: 'escreva aqui a modelo e cor',
+                  title2: 'Placa do carro',
+                  hintText2: 'escreva aqui a placa do carro',
+                  keyboardTypes: const [
+                    TextInputType.name,
+                    TextInputType.name,
+                    TextInputType.number
+                  ],
+                  listNanme: appBloc.parkingLots,
+                  option: TypeOperationForm.addCar,
+                  title3: 'Vaga em que o carro ficará',
+                  hintText3: 'Escreva aqui a vaga em que esse carro ficará'),
+            ],
           ),
-          TextFormFielDCustom(
-              value: _value,
-              title1: 'Modelo e Cor do carro (Fusca - Branco)',
-              hintText1: 'escreva aqui a modelo e cor',
-              title2: 'Placa do carro',
-              hintText2: 'escreva aqui a placa do carro',
-              keyboardTypes: const [
-                TextInputType.name,
-                TextInputType.name,
-                TextInputType.number
-              ],
-              listNanme: appBloc.parkingLots,
-              option: TypeOperationForm.addCar,
-              title3: 'Vaga em que o carro ficará',
-              hintText3: 'Escreva aqui a vaga em que esse carro ficará'),
-        ],
-      ),
-    );
+        ));
   }
 }

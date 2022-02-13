@@ -11,7 +11,7 @@ class ParkingSelectProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppBloc>(
-        create: (context) => appBloc, child: const ParkingSelectPage());
+    return BlocProvider<AppBloc>.value(
+        value: appBloc, child: const ParkingSelectPage());
   }
 }

@@ -13,23 +13,31 @@ class AddParkingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: mainColor,
-        title: const Text('Adicione um estacionamento'),
-      ),
-      body: ListView(
-        children: [
-          TextFormFielDCustom(
-              title1: 'Nome do estacionamento',
-              hintText1: 'escreva aqui o nome do seu estacionamento',
-              title2: 'Quantidade de vagas',
-              hintText2: 'escreva aqui a quantidade de vagas',
-              keyboardTypes: const [TextInputType.name, TextInputType.number],
-              listNanme: appBloc.parkingLots,
-              option: TypeOperationForm.addParking),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: mainColor,
+          title: const Text('Adicione um estacionamento'),
+        ),
+        body: WillPopScope(
+          onWillPop: () {
+            appBloc.add(MakeAddInital());
+            return Future.value(true);
+          },
+          child: ListView(
+            children: [
+              TextFormFielDCustom(
+                  title1: 'Nome do estacionamento',
+                  hintText1: 'escreva aqui o nome do seu estacionamento',
+                  title2: 'Quantidade de vagas',
+                  hintText2: 'escreva aqui a quantidade de vagas',
+                  keyboardTypes: const [
+                    TextInputType.name,
+                    TextInputType.number
+                  ],
+                  listNanme: appBloc.parkingLots,
+                  option: TypeOperationForm.addParking),
+            ],
+          ),
+        ));
   }
 }
