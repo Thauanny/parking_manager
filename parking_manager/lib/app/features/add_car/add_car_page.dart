@@ -49,11 +49,17 @@ class _AddCarPageState extends State<AddCarPage> {
               value: _value,
               title1: 'Modelo e Cor do carro (Fusca - Branco)',
               hintText1: 'escreva aqui a modelo e cor',
-              title2: 'Quantidade de vagas',
-              hintText2: 'escreva aqui a quantidade de vagas',
-              keyboardTypes: [TextInputType.name, TextInputType.name],
+              title2: 'Placa do carro',
+              hintText2: 'escreva aqui a placa do carro',
+              keyboardTypes: const [
+                TextInputType.name,
+                TextInputType.name,
+                TextInputType.number
+              ],
               listNanme: appBloc.parkingLots,
-              option: TypeOperationForm.addCar),
+              option: TypeOperationForm.addCar,
+              title3: 'Vaga em que o carro ficará',
+              hintText3: 'Escreva aqui a vaga em que esse carro ficará'),
         ],
       ),
     );

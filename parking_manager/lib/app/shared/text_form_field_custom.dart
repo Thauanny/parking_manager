@@ -16,6 +16,8 @@ class TextFormFielDCustom extends StatefulWidget {
   final List<dynamic> listNanme;
   dynamic value;
   TypeOperationForm option;
+  String? title3;
+  String? hintText3;
   TextFormFielDCustom(
       {this.value,
       required this.keyboardTypes,
@@ -24,7 +26,9 @@ class TextFormFielDCustom extends StatefulWidget {
       required this.title1,
       required this.title2,
       required this.listNanme,
-      required this.option});
+      required this.option,
+      this.title3,
+      this.hintText3});
 
   @override
   _TextFormFielDCustomState createState() => _TextFormFielDCustomState();
@@ -33,6 +37,7 @@ class TextFormFielDCustom extends StatefulWidget {
 class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   String valueFirstInput = '';
   String valueSecondInput = '';
+  String valueThirdInput = '';
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -64,7 +69,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     textInputType: widget.keyboardTypes.elementAt(0),
                     valueTextOption: 'first'),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 5,
+                  height: MediaQuery.of(context).size.height / 10,
                 ),
                 _title(title: widget.title2),
                 const SizedBox(
@@ -74,6 +79,23 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     hintText: widget.hintText2,
                     textInputType: widget.keyboardTypes.elementAt(1),
                     valueTextOption: 'second'),
+                widget.title3 != null
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 10,
+                          ),
+                          _title(title: widget.title3!),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          _textFormField(
+                              hintText: widget.hintText3!,
+                              textInputType: widget.keyboardTypes.elementAt(2),
+                              valueTextOption: 'third'),
+                        ],
+                      )
+                    : Container(),
                 Padding(
                   padding: EdgeInsets.only(
                       top: MediaQuery.of(context).size.height / 10),
@@ -96,7 +118,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                                   coutParkingSpaces:
                                       int.parse(valueSecondInput),
                                   name: valueFirstInput,
-                                  cars: <Cars>[]),
+                                  cars: <Car>[]),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -111,6 +133,34 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                                 backgroundColor: Colors.red,
                                 content: Text(
                                     "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
+                              ),
+                            );
+                          }
+                        } else if (widget.option == TypeOperationForm.addCar) {
+                          try {
+                            var parking = appBloc.parkingLots.firstWhere(
+                                (element) => element.name == widget.value);
+                            parking.cars.add(
+                              Car(
+                                  checkIn: DateTime.now(),
+                                  modelAndColor: valueFirstInput,
+                                  licensePlate: valueSecondInput,
+                                  parkedIn: int.parse(valueThirdInput),
+                                  parkingName: parking.name),
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text("Carro salvo no estacionamento"),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                    "Falha ao adicionar carro, reveja as informações e tente novamente"),
                               ),
                             );
                           }
@@ -152,6 +202,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
         onChanged: (value) {
           if (valueTextOption == 'first') valueFirstInput = value;
           if (valueTextOption == 'second') valueSecondInput = value;
+          if (valueTextOption == 'third') valueThirdInput = value;
         },
         decoration: InputDecoration(
           hintText: hintText,
