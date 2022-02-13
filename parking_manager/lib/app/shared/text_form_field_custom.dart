@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/features/add_parking/model/parking.dart';
 
+import '../bloc/app_bloc.dart';
 import '../config/colors.dart';
 import '../features/add_car/model/cars.dart';
+import '../utils/enum_type_operation_form.dart';
 
 class TextFormFielDCustom extends StatefulWidget {
   final String hintText1;
@@ -12,7 +15,7 @@ class TextFormFielDCustom extends StatefulWidget {
   final String title2;
   final List<dynamic> listNanme;
   dynamic value;
-  String option;
+  TypeOperationForm option;
   TextFormFielDCustom(
       {this.value,
       required this.keyboardTypes,
@@ -33,14 +36,18 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           Text(
-            widget.value == 'vazio'
-                ? 'Necessario escolher um estacionamento para o carro*'
-                : '',
+            appBloc.parkingLots.isEmpty &&
+                    widget.option != TypeOperationForm.addParking
+                ? 'Adicione estacionamentos antes!'
+                : widget.value == 'vazio'
+                    ? 'Necessario escolher um estacionamento para o carro*'
+                    : '',
             style: const TextStyle(color: Color.fromARGB(255, 223, 13, 9)),
           ),
           Form(
@@ -82,7 +89,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     onPressed: () {
                       if (_formKey.currentState!.validate() &&
                           widget.value != 'vazio') {
-                        if (widget.option == 'addParking') {
+                        if (widget.option == TypeOperationForm.addParking) {
                           try {
                             widget.listNanme.add(
                               Parking(

@@ -1,0 +1,1 @@
+enum TypeOperationForm { addCar, addParking }

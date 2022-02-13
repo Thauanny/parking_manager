@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
+import 'package:parking_manager/app/features/add_parking/model/parking.dart';
+import 'package:parking_manager/app/utils/enum_type_operation_form.dart';
 
 import '../../bloc/app_bloc.dart';
 import '../../shared/text_form_field_custom.dart';
@@ -35,10 +37,10 @@ class _AddCarPageState extends State<AddCarPage> {
                   _value = newValue;
                 });
               },
-              items: <String>['A', 'B', 'C', 'D'].map((String value) {
+              items: appBloc.parkingLots.map((Parking value) {
                 return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+                  value: value.name,
+                  child: Text(value.name),
                 );
               }).toList(),
             ),
@@ -51,7 +53,7 @@ class _AddCarPageState extends State<AddCarPage> {
               hintText2: 'escreva aqui a quantidade de vagas',
               keyboardTypes: [TextInputType.name, TextInputType.name],
               listNanme: appBloc.parkingLots,
-              option: 'addCar'),
+              option: TypeOperationForm.addCar),
         ],
       ),
     );
