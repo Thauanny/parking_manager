@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/features/add_car/add_car_provider.dart';
-import 'package:parking_manager/app/features/parking_space/parking_space_provider.dart';
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import '../../bloc/app_bloc.dart';
 
 import '../../config/colors.dart';
 import '../add_parking/add_parking_provider.dart';
+import '../parking/parking_select/parking_select_provider.dart';
+import '../parking/parking_space/parking_space_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -151,7 +153,7 @@ void checkRoute(BuildContext context, String option, AppBloc appBloc) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ParkingSpaceProvider(appBloc: appBloc),
+          builder: (context) => ParkingSelectProvider(appBloc: appBloc),
         ),
       );
       break;
