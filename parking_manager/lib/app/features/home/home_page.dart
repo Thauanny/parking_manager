@@ -56,8 +56,8 @@ class _HomePageState extends State<HomePage> {
         child: Image.asset(
           'assets/icon.jpg',
           fit: BoxFit.cover,
-          height: 150,
-          width: 150,
+          height: 200,
+          width: 200,
         ),
       ),
     );
@@ -71,8 +71,8 @@ class _HomePageState extends State<HomePage> {
         return checkRoute(context, option, appBloc);
       },
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 7,
-        width: MediaQuery.of(context).size.width - 100,
+        height: MediaQuery.of(context).size.height / 9,
+        width: MediaQuery.of(context).size.width - 50,
         child: Card(
           color: mainColor,
           child: Center(

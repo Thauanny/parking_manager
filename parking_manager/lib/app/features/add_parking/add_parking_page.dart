@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
 
+import '../../bloc/app_bloc.dart';
 import '../../shared/text_form_field_custom.dart';
 
 class AddParkingPage extends StatelessWidget {
@@ -8,6 +10,7 @@ class AddParkingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -15,13 +18,15 @@ class AddParkingPage extends StatelessWidget {
         title: const Text('Adicione um estacionamento'),
       ),
       body: ListView(
-        children: const [
+        children: [
           TextFormFielDCustom(
               title1: 'Nome do estacionamento',
               hintText1: 'escreva aqui o nome do seu estacionamento',
               title2: 'Quantidade de vagas',
               hintText2: 'escreva aqui a quantidade de vagas',
-              keyboardTypes: [TextInputType.name, TextInputType.number]),
+              keyboardTypes: const [TextInputType.name, TextInputType.number],
+              listNanme: appBloc.parkingLots,
+              option: 'addParking'),
         ],
       ),
     );

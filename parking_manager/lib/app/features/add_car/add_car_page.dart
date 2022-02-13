@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
 
+import '../../bloc/app_bloc.dart';
 import '../../shared/text_form_field_custom.dart';
 
 class AddCarPage extends StatefulWidget {
@@ -11,9 +13,10 @@ class AddCarPage extends StatefulWidget {
 }
 
 class _AddCarPageState extends State<AddCarPage> {
-  String? _value;
+  String? _value = 'vazio';
   @override
   Widget build(BuildContext context) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mainColor,
@@ -25,8 +28,8 @@ class _AddCarPageState extends State<AddCarPage> {
             padding: const EdgeInsets.only(top: 20.0, left: 85, right: 85),
             child: DropdownButton<String>(
               isExpanded: false,
-              hint: Text('Escolha o estacionamento'),
-              value: _value,
+              hint: const Text('Escolha o estacionamento'),
+              value: _value == 'vazio' ? null : _value,
               onChanged: (newValue) {
                 setState(() {
                   _value = newValue;
@@ -40,12 +43,15 @@ class _AddCarPageState extends State<AddCarPage> {
               }).toList(),
             ),
           ),
-          const TextFormFielDCustom(
+          TextFormFielDCustom(
+              value: _value,
               title1: 'Modelo e Cor do carro (Fusca - Branco)',
               hintText1: 'escreva aqui a modelo e cor',
               title2: 'Quantidade de vagas',
               hintText2: 'escreva aqui a quantidade de vagas',
-              keyboardTypes: [TextInputType.name, TextInputType.name]),
+              keyboardTypes: [TextInputType.name, TextInputType.name],
+              listNanme: appBloc.parkingLots,
+              option: 'addCar'),
         ],
       ),
     );

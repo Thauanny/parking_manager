@@ -41,9 +41,9 @@ class ParkingSpacePage extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 20),
                           ),
-                          Text(
+                          const Text(
                             "Livre",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontSize: 20),
