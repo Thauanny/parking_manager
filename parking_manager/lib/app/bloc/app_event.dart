@@ -27,3 +27,9 @@ class RemoveCarFromParking extends AppEvent {
     required this.parking,
   });
 }
+
+class RemoveParking extends AppEvent {
+  final Parking parking;
+
+  RemoveParking({required this.parking});
+}
