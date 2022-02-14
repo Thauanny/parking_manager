@@ -153,11 +153,19 @@ void checkRoute(BuildContext context, String option, AppBloc appBloc) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ParkingSelectProvider(appBloc: appBloc),
+          builder: (context) =>
+              ParkingSelectProvider(appBloc: appBloc, isHistory: false),
         ),
       );
       break;
     case 'checkHistory':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ParkingSelectProvider(appBloc: appBloc, isHistory: true),
+        ),
+      );
       break;
   }
 }

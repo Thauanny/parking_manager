@@ -13,9 +13,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppBloc({this.sharedPreferencesConfig}) : super(AppInitial());
 
-  final List<Parking> _parkingLots = [];
-  final List<Parking> _historyList = [];
+  List<Parking> _parkingLots = [];
+  List<Parking> _historyList = [];
   List<Parking> get parkingLots => _parkingLots;
+  List<Parking> get historyList => _historyList;
 
   @override
   Stream<AppState> mapEventToState(
@@ -26,6 +27,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         if (!(_parkingLots
             .any((element) => element.name == event.parking.name))) {
           _parkingLots.add(event.parking);
+          //_historyList.add(List.from(_parkingLots).last);
           yield AddPakingToListAdded();
         } else {
           yield AddPakingToListErrorAlreadyExist();
@@ -43,12 +45,25 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         var parking =
             _parkingLots.firstWhere((element) => element.name == event.value);
         parking.cars.add(event.car);
+
+        _historyList.add(List.from(_parkingLots).last);
         yield AddCarToParkingListAdded();
       } catch (e) {
         yield AddCarToParkingListError();
       }
     } else if (event is MakeAddInital) {
       yield MakeAppInitalClicked();
+    } else if (event is RemoveCarFromParking) {
+      yield RemoveCarFromParkingRemoving();
+      try {
+        var _parking = _parkingLots
+            .firstWhere((element) => element.name == event.parking.name);
+        _parking.cars.removeAt(event.index);
+
+        yield RemoveCarFromParkingRemoved();
+      } catch (e) {
+        yield RemoveCarFromParkingError();
+      }
     }
   }
 }

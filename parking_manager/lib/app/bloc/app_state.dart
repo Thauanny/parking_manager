@@ -16,3 +16,9 @@ class AddCarToParkingListAdded extends AppState {}
 class AddCarToParkingListError extends AppState {}
 
 class MakeAppInitalClicked extends AppState {}
+
+class RemoveCarFromParkingRemoved extends AppState {}
+
+class RemoveCarFromParkingError extends AppState {}
+
+class RemoveCarFromParkingRemoving extends AppState {}

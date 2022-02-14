@@ -17,3 +17,13 @@ class AddCarToParkingList extends AppEvent {
 }
 
 class MakeAddInital extends AppEvent {}
+
+class RemoveCarFromParking extends AppEvent {
+  final int index;
+  final Parking parking;
+
+  RemoveCarFromParking({
+    required this.index,
+    required this.parking,
+  });
+}
