@@ -19,29 +19,35 @@ class ParkingSpacePage extends StatelessWidget {
         title: Text(parking.name),
         backgroundColor: mainColor,
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: BlocBuilder<AppBloc, AppState>(
-          builder: (context, state) {
-            if (state is RemoveCarFromParkingRemoving) {
-              return Center(
-                  child: CircularProgressIndicator(
-                color: mainColor,
-              ));
-            } else if (state is RemoveCarFromParkingError) {
-              WidgetsBinding.instance!.addPostFrameCallback((_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    backgroundColor: Colors.red,
-                    content: Text("Falha ao remover carro,  tente novamente"),
-                  ),
-                );
-              });
-              return gridViewCars(context: context, appBloc: appBloc);
-            } else {
-              return gridViewCars(context: context, appBloc: appBloc);
-            }
-          },
+      body: WillPopScope(
+        onWillPop: () {
+          appBloc.add(MakeAddInital());
+          return Future.value(true);
+        },
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: BlocBuilder<AppBloc, AppState>(
+            builder: (context, state) {
+              if (state is RemoveCarFromParkingRemoving) {
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: mainColor,
+                ));
+              } else if (state is RemoveCarFromParkingError) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text("Falha ao remover carro,  tente novamente"),
+                    ),
+                  );
+                });
+                return gridViewCars(context: context, appBloc: appBloc);
+              } else {
+                return gridViewCars(context: context, appBloc: appBloc);
+              }
+            },
+          ),
         ),
       ),
     );

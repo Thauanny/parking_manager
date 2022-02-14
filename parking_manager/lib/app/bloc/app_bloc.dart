@@ -83,6 +83,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       } catch (e) {
         yield RemoveParkingError();
       }
+    } else if (event is ClearHistory) {
+      try {
+        _historyList.clear();
+        yield ClearHistorySucess();
+      } catch (e) {
+        yield ClearHistoryError();
+      }
     }
   }
 }

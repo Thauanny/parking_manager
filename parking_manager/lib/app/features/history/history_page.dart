@@ -18,43 +18,77 @@ class HistoryPage extends StatelessWidget {
     final _cars = appBloc.historyList;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () => appBloc.add(ClearHistory()),
+            icon: const Icon(Icons.delete_forever, color: Colors.white),
+          )
+        ],
         centerTitle: true,
         title: const Text('Histórico'),
         backgroundColor: mainColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: BlocBuilder<AppBloc, AppState>(
-          builder: (context, state) {
-            return _cars.isEmpty
-                ? Center(
-                    child: Column(
-                    children: [
-                      Icon(
-                        Icons.search_off_outlined,
-                        size: 80,
-                        color: mainColor,
-                      ),
-                      Text(
-                        'Sem Carros',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: mainColor,
-                            fontSize: 20),
-                        overflow: TextOverflow.clip,
-                      )
-                    ],
-                  ))
-                : ListView.builder(
-                    itemCount: _cars.length,
-                    itemBuilder: (context, index) => _historyCards(
-                        context: context, car: _cars.elementAt(index)),
+      body: WillPopScope(
+        onWillPop: () {
+          appBloc.add(MakeAddInital());
+          return Future.value(true);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: BlocBuilder<AppBloc, AppState>(
+            builder: (context, state) {
+              if (state is ClearHistorySucess) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text("Historico limpo"),
+                    ),
                   );
-          },
+                });
+                return listOfCards(cars: _cars);
+              } else if (state is ClearHistoryError) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text("Historico nao pode ser removido"),
+                    ),
+                  );
+                });
+                return listOfCards(cars: _cars);
+              } else {
+                return listOfCards(cars: _cars);
+              }
+            },
+          ),
         ),
       ),
     );
   }
+
+  Widget listOfCards({required List<Car> cars}) => cars.isEmpty
+      ? Center(
+          child: Column(
+          children: [
+            Icon(
+              Icons.search_off_outlined,
+              size: 80,
+              color: mainColor,
+            ),
+            Text(
+              'Sem Carros',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: mainColor, fontSize: 20),
+              overflow: TextOverflow.clip,
+            )
+          ],
+        ))
+      : ListView.builder(
+          itemCount: cars.length,
+          itemBuilder: (context, index) =>
+              _historyCards(context: context, car: cars.elementAt(index)),
+        );
 
   Widget _historyCards({required BuildContext context, required Car car}) {
     return InkWell(

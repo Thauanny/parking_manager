@@ -33,3 +33,5 @@ class RemoveParking extends AppEvent {
 
   RemoveParking({required this.parking});
 }
+
+class ClearHistory extends AppEvent {}

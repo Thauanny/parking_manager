@@ -17,83 +17,89 @@ class ParkingSelectPage extends StatelessWidget {
           backgroundColor: mainColor,
           title: const Text('Estacionamento Registrados'),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            appBloc.parkingLots.isEmpty
-                ? Center(
-                    child: Column(
-                    children: [
-                      Icon(
-                        Icons.search_off_outlined,
-                        size: 80,
-                        color: mainColor,
+        body: WillPopScope(
+          onWillPop: () {
+            appBloc.add(MakeAddInital());
+            return Future.value(true);
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              appBloc.parkingLots.isEmpty
+                  ? Center(
+                      child: Column(
+                      children: [
+                        Icon(
+                          Icons.search_off_outlined,
+                          size: 80,
+                          color: mainColor,
+                        ),
+                        Text(
+                          'Sem estacionamentos',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: mainColor,
+                              fontSize: 20),
+                          overflow: TextOverflow.clip,
+                        )
+                      ],
+                    ))
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.height - 100,
+                      width: MediaQuery.of(context).size.width,
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: BlocBuilder<AppBloc, AppState>(
+                            builder: (context, state) {
+                          if (state is RemoveCarFromParkingRemoved) {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.green,
+                                  content: Text("Estacionamento Removido"),
+                                ),
+                              );
+                            });
+                            return listOfParkings(appBloc: appBloc);
+                          } else if (state is RemoveCarFromParkingError) {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text(
+                                      "Estacionamento Falhou em ser Removido"),
+                                ),
+                              );
+                            });
+                            return listOfParkings(appBloc: appBloc);
+                          } else {
+                            return appBloc.parkingLots.isEmpty
+                                ? Center(
+                                    child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.search_off_outlined,
+                                        size: 80,
+                                        color: mainColor,
+                                      ),
+                                      Text(
+                                        'Sem estacionamentos',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: mainColor,
+                                            fontSize: 20),
+                                        overflow: TextOverflow.clip,
+                                      )
+                                    ],
+                                  ))
+                                : listOfParkings(appBloc: appBloc);
+                          }
+                        }),
                       ),
-                      Text(
-                        'Sem estacionamentos',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: mainColor,
-                            fontSize: 20),
-                        overflow: TextOverflow.clip,
-                      )
-                    ],
-                  ))
-                : SizedBox(
-                    height: MediaQuery.of(context).size.height - 100,
-                    width: MediaQuery.of(context).size.width,
-                    child: Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: BlocBuilder<AppBloc, AppState>(
-                          builder: (context, state) {
-                        if (state is RemoveCarFromParkingRemoved) {
-                          WidgetsBinding.instance!.addPostFrameCallback((_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text("Estacionamento Removido"),
-                              ),
-                            );
-                          });
-                          return listOfParkings(appBloc: appBloc);
-                        } else if (state is RemoveCarFromParkingError) {
-                          WidgetsBinding.instance!.addPostFrameCallback((_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                    "Estacionamento Falhou em ser Removido"),
-                              ),
-                            );
-                          });
-                          return listOfParkings(appBloc: appBloc);
-                        } else {
-                          return appBloc.parkingLots.isEmpty
-                              ? Center(
-                                  child: Column(
-                                  children: [
-                                    Icon(
-                                      Icons.search_off_outlined,
-                                      size: 80,
-                                      color: mainColor,
-                                    ),
-                                    Text(
-                                      'Sem estacionamentos',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: mainColor,
-                                          fontSize: 20),
-                                      overflow: TextOverflow.clip,
-                                    )
-                                  ],
-                                ))
-                              : listOfParkings(appBloc: appBloc);
-                        }
-                      }),
                     ),
-                  ),
-          ],
+            ],
+          ),
         ));
   }
 

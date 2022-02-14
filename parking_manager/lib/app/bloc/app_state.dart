@@ -26,3 +26,7 @@ class RemoveCarFromParkingRemoving extends AppState {}
 class RemoveParkingRemoved extends AppState {}
 
 class RemoveParkingError extends AppState {}
+
+class ClearHistorySucess extends AppState {}
+
+class ClearHistoryError extends AppState {}
