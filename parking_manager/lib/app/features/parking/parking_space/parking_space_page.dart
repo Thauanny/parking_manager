@@ -95,19 +95,11 @@ class ParkingSpacePage extends StatelessWidget {
                           car != null
                               ? IconButton(
                                   onPressed: () {
-                                    var parkingHistory = appBloc.historyList
-                                        .firstWhere((element) =>
-                                            element.name == parking.name);
-
-                                    parkingHistory.cars
-                                        .elementAt(
-                                            parkingHistory.cars.indexOf(car))
-                                        .checkOut = DateTime.now();
                                     var _parking = appBloc.parkingLots
                                         .firstWhere((element) =>
                                             element.name == parking.name);
                                     appBloc.add(RemoveCarFromParking(
-                                        index: parkingHistory.cars.indexOf(car),
+                                        index: _parking.cars.indexOf(car),
                                         parking: _parking));
                                   },
                                   icon: const Icon(

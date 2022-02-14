@@ -13,10 +13,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppBloc({this.sharedPreferencesConfig}) : super(AppInitial());
 
-  List<Parking> _parkingLots = [];
-  List<Parking> _historyList = [];
+  final List<Parking> _parkingLots = [];
+  final List<Car> _historyList = [];
+
+  final List<Parking> tesd = [];
+
   List<Parking> get parkingLots => _parkingLots;
-  List<Parking> get historyList => _historyList;
+  List<Car> get historyList => _historyList;
 
   @override
   Stream<AppState> mapEventToState(
@@ -27,7 +30,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         if (!(_parkingLots
             .any((element) => element.name == event.parking.name))) {
           _parkingLots.add(event.parking);
-          //_historyList.add(List.from(_parkingLots).last);
+
           yield AddPakingToListAdded();
         } else {
           yield AddPakingToListErrorAlreadyExist();
@@ -45,8 +48,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         var parking =
             _parkingLots.firstWhere((element) => element.name == event.value);
         parking.cars.add(event.car);
+        _historyList.add(event.car);
 
-        _historyList.add(List.from(_parkingLots).last);
         yield AddCarToParkingListAdded();
       } catch (e) {
         yield AddCarToParkingListError();
@@ -56,12 +59,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     } else if (event is RemoveCarFromParking) {
       yield RemoveCarFromParkingRemoving();
       try {
-        var _parking = _parkingLots
-            .firstWhere((element) => element.name == event.parking.name);
-        _parking.cars.removeAt(event.index);
+        var _parking = event.parking;
+
+        var car = _parking.cars.elementAt(event.index);
+
+        car = _historyList
+            .firstWhere((element) => element.parkedIn == car.parkedIn);
+        car.checkOut = DateTime.now();
+        _parkingLots
+            .firstWhere((element) => element.name == event.parking.name)
+            .cars
+            .removeAt(event.index);
 
         yield RemoveCarFromParkingRemoved();
       } catch (e) {
+        print(e);
         yield RemoveCarFromParkingError();
       }
     }

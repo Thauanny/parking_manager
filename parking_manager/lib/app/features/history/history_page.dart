@@ -8,14 +8,14 @@ import 'package:parking_manager/app/features/add_parking/model/parking.dart';
 import '../../shared/date_time_format.dart';
 
 class HistoryPage extends StatelessWidget {
-  final Parking parking;
-  const HistoryPage({Key? key, required this.parking}) : super(key: key);
+  const HistoryPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
-    final _parking = appBloc.historyList
-        .firstWhere((element) => element.name == parking.name);
+    final _cars = appBloc.historyList;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -26,14 +26,29 @@ class HistoryPage extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: BlocBuilder<AppBloc, AppState>(
           builder: (context, state) {
-            return _parking.cars.isEmpty
+            return _cars.isEmpty
                 ? Center(
-                    child: Text('vazio'),
-                  )
+                    child: Column(
+                    children: [
+                      Icon(
+                        Icons.search_off_outlined,
+                        size: 80,
+                        color: mainColor,
+                      ),
+                      Text(
+                        'Sem Carros',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: mainColor,
+                            fontSize: 20),
+                        overflow: TextOverflow.clip,
+                      )
+                    ],
+                  ))
                 : ListView.builder(
-                    itemCount: _parking.cars.length,
+                    itemCount: _cars.length,
                     itemBuilder: (context, index) => _historyCards(
-                        context: context, car: _parking.cars.elementAt(index)),
+                        context: context, car: _cars.elementAt(index)),
                   );
           },
         ),
@@ -44,7 +59,7 @@ class HistoryPage extends StatelessWidget {
   Widget _historyCards({required BuildContext context, required Car car}) {
     return InkWell(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 4,
+        height: MediaQuery.of(context).size.height / 3,
         child: Card(
           color: mainColor,
           child: Center(
@@ -65,6 +80,9 @@ class HistoryPage extends StatelessWidget {
                             fontSize: 20),
                         overflow: TextOverflow.clip,
                       ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         'Placa: ' + car.licensePlate,
                         style: const TextStyle(
@@ -72,6 +90,9 @@ class HistoryPage extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 20),
                         overflow: TextOverflow.clip,
+                      ),
+                      const SizedBox(
+                        height: 10,
                       ),
                       Text(
                         'Entrada: ' + dateTimeFormat(car.checkIn),
@@ -81,11 +102,36 @@ class HistoryPage extends StatelessWidget {
                             fontSize: 20),
                         overflow: TextOverflow.clip,
                       ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         'Saida: ' +
                             (car.checkOut != null
                                 ? dateTimeFormat(car.checkIn)
                                 : ''),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20),
+                        overflow: TextOverflow.clip,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Local ' + car.parkingName,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20),
+                        overflow: TextOverflow.clip,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Vaga ' + car.parkedIn.toString(),
                         style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

@@ -3,13 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
 
-import '../../history/history_provider.dart';
 import '../parking_space/parking_space_provider.dart';
 
 class ParkingSelectPage extends StatelessWidget {
-  final bool isHistory;
-  const ParkingSelectPage({Key? key, required this.isHistory})
-      : super(key: key);
+  const ParkingSelectPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,28 +49,16 @@ class ParkingSelectPage extends StatelessWidget {
                           itemCount: appBloc.parkingLots.length,
                           itemBuilder: (context, index) => InkWell(
                                 onTap: () {
-                                  if (isHistory) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HistoryProvider(
-                                                parking: appBloc.parkingLots
-                                                    .elementAt(index),
-                                                appBloc: appBloc,
-                                              )),
-                                    );
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ParkingSpaceProvider(
-                                                appBloc: appBloc,
-                                                parking: appBloc.parkingLots
-                                                    .elementAt(index)),
-                                      ),
-                                    );
-                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ParkingSpaceProvider(
+                                              appBloc: appBloc,
+                                              parking: appBloc.parkingLots
+                                                  .elementAt(index)),
+                                    ),
+                                  );
                                 },
                                 child: SizedBox(
                                   height:
