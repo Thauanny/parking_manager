@@ -26,7 +26,7 @@ class ParkingSelectPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              appBloc.parkingLots.isEmpty
+              appBloc.sharedPreferencesConfig!.parkings.isEmpty
                   ? Center(
                       child: Column(
                       children: [
@@ -74,7 +74,8 @@ class ParkingSelectPage extends StatelessWidget {
                             });
                             return listOfParkings(appBloc: appBloc);
                           } else {
-                            return appBloc.parkingLots.isEmpty
+                            return appBloc
+                                    .sharedPreferencesConfig!.parkings.isEmpty
                                 ? Center(
                                     child: Column(
                                     children: [
@@ -104,7 +105,7 @@ class ParkingSelectPage extends StatelessWidget {
   }
 
   Widget listOfParkings({required AppBloc appBloc}) => ListView.builder(
-      itemCount: appBloc.parkingLots.length,
+      itemCount: appBloc.sharedPreferencesConfig!.parkings.length,
       itemBuilder: (context, index) => InkWell(
             onTap: () {
               Navigator.push(
@@ -112,7 +113,8 @@ class ParkingSelectPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => ParkingSpaceProvider(
                       appBloc: appBloc,
-                      parking: appBloc.parkingLots.elementAt(index)),
+                      parking: appBloc.sharedPreferencesConfig!.parkings
+                          .elementAt(index)),
                 ),
               );
             },
@@ -131,7 +133,9 @@ class ParkingSelectPage extends StatelessWidget {
                             onPressed: () {
                               appBloc.add(
                                 RemoveParking(
-                                  parking: appBloc.parkingLots.elementAt(index),
+                                  parking: appBloc
+                                      .sharedPreferencesConfig!.parkings
+                                      .elementAt(index),
                                 ),
                               );
                             },
@@ -144,7 +148,9 @@ class ParkingSelectPage extends StatelessWidget {
                           SizedBox(
                             width: 200,
                             child: Text(
-                              appBloc.parkingLots.elementAt(index).name,
+                              appBloc.sharedPreferencesConfig!.parkings
+                                  .elementAt(index)
+                                  .name,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,

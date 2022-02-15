@@ -54,7 +54,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
       child: Column(
         children: [
           Text(
-            appBloc.parkingLots.isEmpty &&
+            appBloc.sharedPreferencesConfig!.parkings.isEmpty &&
                     widget.option != TypeOperationForm.addParking
                 ? 'Adicione estacionamentos antes!'
                 : widget.value == 'vazio'
@@ -256,7 +256,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
           if (valueTextOption == 'second') valueSecondInput = value;
           if (valueTextOption == 'third') {
             final blocApp = BlocProvider.of<AppBloc>(context);
-            var parking = blocApp.parkingLots
+            var parking = blocApp.sharedPreferencesConfig!.parkings
                 .firstWhere((element) => element.name == widget.value);
             if (value.isNotEmpty &&
                 int.parse(value) <= parking.coutParkingSpaces) {

@@ -101,7 +101,8 @@ class ParkingSpacePage extends StatelessWidget {
                           car != null
                               ? IconButton(
                                   onPressed: () {
-                                    var _parking = appBloc.parkingLots
+                                    var _parking = appBloc
+                                        .sharedPreferencesConfig!.parkings
                                         .firstWhere((element) =>
                                             element.name == parking.name);
                                     appBloc.add(RemoveCarFromParking(

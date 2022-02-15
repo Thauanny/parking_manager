@@ -5,7 +5,7 @@ import 'package:parking_manager/app/config/colors.dart';
 import 'package:parking_manager/app/features/add_car/model/cars.dart';
 import 'package:parking_manager/app/features/add_parking/model/parking.dart';
 
-import '../../shared/date_time_format.dart';
+import '../../utils/date_time_format.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({
@@ -15,7 +15,7 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
-    final _cars = appBloc.historyList;
+    final _cars = appBloc.sharedPreferencesConfig!.history;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -129,7 +129,7 @@ class HistoryPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        'Entrada: ' + dateTimeFormat(car.checkIn),
+                        'Entrada: ' + dateTimeFormatToString(car.checkIn),
                         style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -142,7 +142,7 @@ class HistoryPage extends StatelessWidget {
                       Text(
                         'Saida: ' +
                             (car.checkOut != null
-                                ? dateTimeFormat(car.checkIn)
+                                ? dateTimeFormatToString(car.checkIn)
                                 : ''),
                         style: const TextStyle(
                             fontWeight: FontWeight.bold,

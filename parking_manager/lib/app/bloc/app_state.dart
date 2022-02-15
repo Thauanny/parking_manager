@@ -30,3 +30,7 @@ class RemoveParkingError extends AppState {}
 class ClearHistorySucess extends AppState {}
 
 class ClearHistoryError extends AppState {}
+
+class HistoryAndParkingRegistred extends AppState {}
+
+class HistoryAndParkingLoaded extends AppState {}

@@ -34,7 +34,7 @@ class AddParkingPage extends StatelessWidget {
                     TextInputType.name,
                     TextInputType.number
                   ],
-                  listNanme: appBloc.parkingLots,
+                  listNanme: appBloc.sharedPreferencesConfig!.parkings,
                   option: TypeOperationForm.addParking),
             ],
           ),

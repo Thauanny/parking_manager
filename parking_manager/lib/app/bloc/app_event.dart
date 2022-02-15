@@ -35,3 +35,5 @@ class RemoveParking extends AppEvent {
 }
 
 class ClearHistory extends AppEvent {}
+
+class HistoryAndParkingLoadedEvent extends AppEvent {}

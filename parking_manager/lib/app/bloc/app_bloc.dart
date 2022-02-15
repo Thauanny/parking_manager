@@ -13,23 +13,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppBloc({this.sharedPreferencesConfig}) : super(AppInitial());
 
-  final List<Parking> _parkingLots = [];
-  final List<Car> _historyList = [];
-
-  final List<Parking> tesd = [];
-
-  List<Parking> get parkingLots => _parkingLots;
-  List<Car> get historyList => _historyList;
-
   @override
   Stream<AppState> mapEventToState(
     AppEvent event,
   ) async* {
     if (event is AddPakingToList) {
       try {
-        if (!(_parkingLots
+        if (!(sharedPreferencesConfig!.parkings
             .any((element) => element.name == event.parking.name))) {
-          _parkingLots.add(event.parking);
+          sharedPreferencesConfig!.parkings.add(event.parking);
+          sharedPreferencesConfig!.setHistoryAndParkings('parking');
 
           yield AddPakingToListAdded();
         } else {
@@ -45,10 +38,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     } else if (event is AddCarToParkingList) {
       try {
-        var parking =
-            _parkingLots.firstWhere((element) => element.name == event.value);
+        var parking = sharedPreferencesConfig!.parkings
+            .firstWhere((element) => element.name == event.value);
         parking.cars.add(event.car);
-        _historyList.add(event.car);
+        sharedPreferencesConfig!.setHistoryAndParkings('parking');
+
+        sharedPreferencesConfig!.history.add(event.car);
+        sharedPreferencesConfig!.setHistoryAndParkings('history');
 
         yield AddCarToParkingListAdded();
       } catch (e) {
@@ -63,13 +59,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
         var car = _parking.cars.elementAt(event.index);
 
-        car = _historyList
+        car = sharedPreferencesConfig!.history
             .firstWhere((element) => element.parkedIn == car.parkedIn);
+
         car.checkOut = DateTime.now();
-        _parkingLots
+        sharedPreferencesConfig!.setHistoryAndParkings('history');
+        sharedPreferencesConfig!.parkings
             .firstWhere((element) => element.name == event.parking.name)
             .cars
             .removeAt(event.index);
+        sharedPreferencesConfig!.setHistoryAndParkings('parking');
 
         yield RemoveCarFromParkingRemoved();
       } catch (e) {
@@ -78,14 +77,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       }
     } else if (event is RemoveParking) {
       try {
-        _parkingLots.remove(event.parking);
+        sharedPreferencesConfig!.parkings.remove(event.parking);
+
+        sharedPreferencesConfig!.setHistoryAndParkings('parking');
+
         yield RemoveParkingRemoved();
       } catch (e) {
         yield RemoveParkingError();
       }
     } else if (event is ClearHistory) {
       try {
-        _historyList.clear();
+        sharedPreferencesConfig!.history.clear();
+        sharedPreferencesConfig!.setHistoryAndParkings('history');
         yield ClearHistorySucess();
       } catch (e) {
         yield ClearHistoryError();

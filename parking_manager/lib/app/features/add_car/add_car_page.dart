@@ -42,7 +42,8 @@ class _AddCarPageState extends State<AddCarPage> {
                       _value = newValue;
                     });
                   },
-                  items: appBloc.parkingLots.map((Parking value) {
+                  items: appBloc.sharedPreferencesConfig!.parkings
+                      .map((Parking value) {
                     return DropdownMenuItem<String>(
                       value: value.name,
                       child: Text(value.name),
@@ -61,7 +62,7 @@ class _AddCarPageState extends State<AddCarPage> {
                     TextInputType.name,
                     TextInputType.number
                   ],
-                  listNanme: appBloc.parkingLots,
+                  listNanme: appBloc.sharedPreferencesConfig!.parkings,
                   option: TypeOperationForm.addCar,
                   title3: 'Vaga em que o carro ficará',
                   hintText3: 'Escreva aqui a vaga em que esse carro ficará'),
