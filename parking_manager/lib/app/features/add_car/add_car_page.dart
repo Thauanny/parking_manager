@@ -22,7 +22,7 @@ class _AddCarPageState extends State<AddCarPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: mainColor,
-          title: Text('Adicionar um carro ao um estacionamento'),
+          title: const Text('Adicionar um carro ao um estacionamento'),
         ),
         body: WillPopScope(
           onWillPop: () {

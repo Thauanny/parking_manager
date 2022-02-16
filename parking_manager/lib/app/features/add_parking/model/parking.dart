@@ -29,7 +29,6 @@ class Parking {
           .map<Map<String?, dynamic>>((parking) => parking!.toMap(parking))
           .toList());
     } catch (e) {
-      print(e);
       return '';
     }
   }

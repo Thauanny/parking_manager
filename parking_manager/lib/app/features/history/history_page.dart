@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
 import 'package:parking_manager/app/features/add_car/model/cars.dart';
-import 'package:parking_manager/app/features/add_parking/model/parking.dart';
 
 import '../../utils/date_time_format.dart';
 

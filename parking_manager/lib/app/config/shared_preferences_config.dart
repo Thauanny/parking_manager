@@ -43,20 +43,16 @@ class SharedPreferencesConfig extends AppBloc {
   }
 
   void setHistoryAndParkings(String type) async {
-    try {
-      switch (type) {
-        case 'history':
-          await _prefs!.setString('history', Car.encode(history)!);
-          break;
-        case 'parking':
-          await _prefs!.setString('parking', Parking.encode(parkings)!);
-          break;
-      }
-
-      await _readHistoryAndParking();
-    } catch (e) {
-      print(e);
+    switch (type) {
+      case 'history':
+        await _prefs!.setString('history', Car.encode(history)!);
+        break;
+      case 'parking':
+        await _prefs!.setString('parking', Parking.encode(parkings)!);
+        break;
     }
+
+    await _readHistoryAndParking();
   }
 
   void setCarsInParkings() {

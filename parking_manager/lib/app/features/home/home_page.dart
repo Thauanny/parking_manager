@@ -8,7 +8,6 @@ import '../../config/colors.dart';
 import '../add_parking/add_parking_provider.dart';
 import '../history/history_provider.dart';
 import '../parking/parking_select/parking_select_provider.dart';
-import '../parking/parking_space/parking_space_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

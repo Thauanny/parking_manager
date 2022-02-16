@@ -76,7 +76,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
         yield RemoveCarFromParkingRemoved();
       } catch (e) {
-        print(e);
         yield RemoveCarFromParkingError();
       }
     } else if (event is RemoveParking) {

@@ -6,7 +6,10 @@ import '../bloc/app_bloc.dart';
 import '../config/colors.dart';
 import '../features/add_car/model/cars.dart';
 import '../utils/enum_type_operation_form.dart';
+import '../utils/enum_value_text_option.dart';
+import '../utils/is_parking_space_free.dart';
 
+// ignore: must_be_immutable
 class TextFormFielDCustom extends StatefulWidget {
   final String hintText1;
   final String hintText2;
@@ -18,17 +21,18 @@ class TextFormFielDCustom extends StatefulWidget {
   TypeOperationForm option;
   String? title3;
   String? hintText3;
-  TextFormFielDCustom(
-      {this.value,
-      required this.keyboardTypes,
-      required this.hintText1,
-      required this.hintText2,
-      required this.title1,
-      required this.title2,
-      required this.listNanme,
-      required this.option,
-      this.title3,
-      this.hintText3});
+  TextFormFielDCustom({
+    this.value,
+    required this.keyboardTypes,
+    required this.hintText1,
+    required this.hintText2,
+    required this.title1,
+    required this.title2,
+    required this.listNanme,
+    required this.option,
+    this.title3,
+    this.hintText3,
+  });
 
   @override
   _TextFormFielDCustomState createState() => _TextFormFielDCustomState();
@@ -43,6 +47,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   void initState() {
     final appBloc = BlocProvider.of<AppBloc>(context);
     appBloc.add(MakeAddInital());
+    super.initState();
   }
 
   @override
@@ -126,7 +131,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     _textFormField(
                         hintText: widget.hintText1,
                         textInputType: widget.keyboardTypes.elementAt(0),
-                        valueTextOption: 'first'),
+                        valueTextOption: ValueTextOption.first),
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 10,
                     ),
@@ -137,7 +142,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     _textFormField(
                         hintText: widget.hintText2,
                         textInputType: widget.keyboardTypes.elementAt(1),
-                        valueTextOption: 'second'),
+                        valueTextOption: ValueTextOption.second),
                     widget.title3 != null
                         ? Column(
                             children: [
@@ -152,7 +157,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                                   hintText: widget.hintText3!,
                                   textInputType:
                                       widget.keyboardTypes.elementAt(2),
-                                  valueTextOption: 'third'),
+                                  valueTextOption: ValueTextOption.third),
                             ],
                           )
                         : Container(),
@@ -251,12 +256,15 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   Widget _textFormField(
           {required String hintText,
           required TextInputType textInputType,
-          required String valueTextOption}) =>
+          required ValueTextOption valueTextOption}) =>
       TextFormField(
         onChanged: (value) {
-          if (valueTextOption == 'first') valueFirstInput = value;
-          if (valueTextOption == 'second') valueSecondInput = value;
-          if (valueTextOption == 'third') {
+          if (valueTextOption == ValueTextOption.first) valueFirstInput = value;
+          if (valueTextOption == ValueTextOption.second) {
+            valueSecondInput = value;
+          }
+
+          if (valueTextOption == ValueTextOption.third) {
             final blocApp = BlocProvider.of<AppBloc>(context);
             var parking = blocApp.sharedPreferencesConfig!.parkings
                 .firstWhere((element) => element!.name == widget.value);
@@ -279,19 +287,22 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
         textAlign: TextAlign.center,
         validator: (text) {
           var blocApp = BlocProvider.of<AppBloc>(context);
-          var parking = blocApp.sharedPreferencesConfig!.parkings
-              .firstWhere((element) => element!.name == widget.value);
+          Parking? parking;
+          if (valueTextOption == ValueTextOption.third) {
+            parking = blocApp.sharedPreferencesConfig!.parkings
+                .firstWhere((element) => element!.name == widget.value);
+          }
+
           if (text == null || text.isEmpty) {
-            return 'Text is empty';
-          } else if (text.isNotEmpty &&
+            return 'Insira uma informação';
+          } else if (valueTextOption == ValueTextOption.third &&
+              text.isNotEmpty &&
               parkingPlaceDontExist &&
               textInputType == TextInputType.number) {
             return 'Vaga nao existe nesse estacionamento';
-          } else if (textInputType == TextInputType.number &&
-              (parking!.cars!.any((element) =>
-                  (text.isNotEmpty) &&
-                  (element.parkedIn.toString() == text) &&
-                  element.parkingName == widget.value))) {
+          } else if (valueTextOption == ValueTextOption.third &&
+              textInputType == TextInputType.number &&
+              isParkingSpaceFree(parking!, text, widget.value)) {
             return 'Vaga já ocupada';
           } else if (textInputType == TextInputType.number &&
               int.parse(text) <= 0) {
