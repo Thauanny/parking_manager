@@ -236,6 +236,8 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
   }
 
   bool parkingPlaceDontExist = false;
+  bool parkingPlaceOccupied = false;
+
   Widget _title({required String title}) => Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: Center(
@@ -257,9 +259,9 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
           if (valueTextOption == 'third') {
             final blocApp = BlocProvider.of<AppBloc>(context);
             var parking = blocApp.sharedPreferencesConfig!.parkings
-                .firstWhere((element) => element.name == widget.value);
+                .firstWhere((element) => element!.name == widget.value);
             if (value.isNotEmpty &&
-                int.parse(value) <= parking.coutParkingSpaces) {
+                int.parse(value) <= parking!.coutParkingSpaces) {
               valueThirdInput = value;
               parkingPlaceDontExist = false;
             } else {
@@ -276,12 +278,24 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
         keyboardType: textInputType,
         textAlign: TextAlign.center,
         validator: (text) {
+          var blocApp = BlocProvider.of<AppBloc>(context);
+          var parking = blocApp.sharedPreferencesConfig!.parkings
+              .firstWhere((element) => element!.name == widget.value);
           if (text == null || text.isEmpty) {
             return 'Text is empty';
           } else if (text.isNotEmpty &&
               parkingPlaceDontExist &&
               textInputType == TextInputType.number) {
             return 'Vaga nao existe nesse estacionamento';
+          } else if (textInputType == TextInputType.number &&
+              (parking!.cars!.any((element) =>
+                  (text.isNotEmpty) &&
+                  (element.parkedIn.toString() == text) &&
+                  element.parkingName == widget.value))) {
+            return 'Vaga já ocupada';
+          } else if (textInputType == TextInputType.number &&
+              int.parse(text) <= 0) {
+            return 'As vagas começam do numero 1';
           }
           return null;
         },

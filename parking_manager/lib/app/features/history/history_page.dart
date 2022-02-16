@@ -42,7 +42,7 @@ class HistoryPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       backgroundColor: Colors.green,
-                      content: Text("Historico limpo"),
+                      content: Text("Carros que já sairam foram removidos!"),
                     ),
                   );
                 });

@@ -18,9 +18,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     AppEvent event,
   ) async* {
     if (event is AddPakingToList) {
+      sharedPreferencesConfig!.setHistoryAndParkings('parking');
+      sharedPreferencesConfig!.setHistoryAndParkings('history');
       try {
         if (!(sharedPreferencesConfig!.parkings
-            .any((element) => element.name == event.parking.name))) {
+            .any((element) => element!.name == event.parking.name))) {
           sharedPreferencesConfig!.parkings.add(event.parking);
           sharedPreferencesConfig!.setHistoryAndParkings('parking');
 
@@ -39,8 +41,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     } else if (event is AddCarToParkingList) {
       try {
         var parking = sharedPreferencesConfig!.parkings
-            .firstWhere((element) => element.name == event.value);
-        parking.cars.add(event.car);
+            .firstWhere((element) => element!.name == event.value);
+        parking!.cars!.add(event.car);
         sharedPreferencesConfig!.setHistoryAndParkings('parking');
 
         sharedPreferencesConfig!.history.add(event.car);
@@ -57,16 +59,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       try {
         var _parking = event.parking;
 
-        var car = _parking.cars.elementAt(event.index);
+        var car = _parking.cars!.elementAt(event.index);
 
-        car = sharedPreferencesConfig!.history
-            .firstWhere((element) => element.parkedIn == car.parkedIn);
+        sharedPreferencesConfig!.history
+            .firstWhere((element) =>
+                element.parkedIn == car.parkedIn &&
+                element.parkingName == car.parkingName)
+            .checkOut = DateTime.now();
 
-        car.checkOut = DateTime.now();
         sharedPreferencesConfig!.setHistoryAndParkings('history');
         sharedPreferencesConfig!.parkings
-            .firstWhere((element) => element.name == event.parking.name)
-            .cars
+            .firstWhere((element) => element!.name == event.parking.name)!
+            .cars!
             .removeAt(event.index);
         sharedPreferencesConfig!.setHistoryAndParkings('parking');
 
@@ -87,7 +91,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       }
     } else if (event is ClearHistory) {
       try {
-        sharedPreferencesConfig!.history.clear();
+        sharedPreferencesConfig!.history
+            .removeWhere((element) => element.checkOut != null);
         sharedPreferencesConfig!.setHistoryAndParkings('history');
         yield ClearHistorySucess();
       } catch (e) {

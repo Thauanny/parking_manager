@@ -30,15 +30,16 @@ class Car {
   }
 
   factory Car.fromJson(Map<dynamic, dynamic> jsonData) {
-    return Car(
+    var car = Car(
         parkedIn: jsonData['parkedIn'],
         parkingName: jsonData['parkingName'],
         licensePlate: jsonData['licensePlate'],
         modelAndColor: jsonData['modelAndColor'],
         checkIn: dateTimeFormatToDateTime(jsonData['checkIn']),
-        checkOut: jsonData['checkOut'] == "null"
+        checkOut: jsonData['checkOut'] == null
             ? null
             : dateTimeFormatToDateTime(jsonData['checkOut']));
+    return car;
   }
 
   static String? encode(List<Car> car) {
@@ -47,27 +48,29 @@ class Car {
         car.map<Map<dynamic, dynamic>>((car) => car.toMap()).toList(),
       );
     } catch (e) {
-      print(e);
       return '';
     }
   }
 
-  static Map<String, dynamic> makeMap(Car car) => {
-        'parkedIn': car.parkedIn,
-        'parkingName': car.parkingName,
-        'modelAndColor': car.modelAndColor,
-        'licensePlate': car.licensePlate,
-        'checkIn': dateTimeFormatToString(car.checkIn),
-        'checkOut':
-            car.checkOut == null ? null : dateTimeFormatToString(car.checkOut!)
-      };
+  static Map<String, dynamic> makeMap(Car car) {
+    var map = {
+      'parkedIn': car.parkedIn,
+      'parkingName': car.parkingName,
+      'modelAndColor': car.modelAndColor,
+      'licensePlate': car.licensePlate,
+      'checkIn': dateTimeFormatToString(car.checkIn),
+      'checkOut':
+          car.checkOut == null ? null : dateTimeFormatToString(car.checkOut!)
+    };
+    return map;
+  }
+
   static List<Car>? decode(String car) {
     try {
       return (json.decode(car) as List<dynamic>)
           .map<Car>((item) => Car.fromJson(item))
           .toList();
     } catch (e) {
-      print(e);
       return [];
     }
   }

@@ -29,7 +29,7 @@ class RemoveCarFromParking extends AppEvent {
 }
 
 class RemoveParking extends AppEvent {
-  final Parking parking;
+  final Parking? parking;
 
   RemoveParking({required this.parking});
 }

@@ -56,7 +56,7 @@ class ParkingSpacePage extends StatelessWidget {
   Car? _returnCarOrFreeSpace({required int index}) {
     try {
       var car =
-          parking.cars.firstWhere((element) => element.parkedIn == index + 1);
+          parking.cars!.firstWhere((element) => element.parkedIn == index + 1);
 
       return car;
     } catch (e) {
@@ -104,9 +104,9 @@ class ParkingSpacePage extends StatelessWidget {
                                     var _parking = appBloc
                                         .sharedPreferencesConfig!.parkings
                                         .firstWhere((element) =>
-                                            element.name == parking.name);
+                                            element!.name == parking.name);
                                     appBloc.add(RemoveCarFromParking(
-                                        index: _parking.cars.indexOf(car),
+                                        index: _parking!.cars!.indexOf(car),
                                         parking: _parking));
                                   },
                                   icon: const Icon(

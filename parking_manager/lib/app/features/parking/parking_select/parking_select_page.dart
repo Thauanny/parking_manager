@@ -52,7 +52,7 @@ class ParkingSelectPage extends StatelessWidget {
                         padding: const EdgeInsets.all(50.0),
                         child: BlocBuilder<AppBloc, AppState>(
                             builder: (context, state) {
-                          if (state is RemoveCarFromParkingRemoved) {
+                          if (state is RemoveParkingRemoved) {
                             WidgetsBinding.instance!.addPostFrameCallback((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -62,7 +62,7 @@ class ParkingSelectPage extends StatelessWidget {
                               );
                             });
                             return listOfParkings(appBloc: appBloc);
-                          } else if (state is RemoveCarFromParkingError) {
+                          } else if (state is RemoveParkingError) {
                             WidgetsBinding.instance!.addPostFrameCallback((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -149,7 +149,7 @@ class ParkingSelectPage extends StatelessWidget {
                             width: 200,
                             child: Text(
                               appBloc.sharedPreferencesConfig!.parkings
-                                  .elementAt(index)
+                                  .elementAt(index)!
                                   .name,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,

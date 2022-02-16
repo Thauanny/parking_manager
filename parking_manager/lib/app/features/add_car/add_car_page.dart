@@ -43,9 +43,9 @@ class _AddCarPageState extends State<AddCarPage> {
                     });
                   },
                   items: appBloc.sharedPreferencesConfig!.parkings
-                      .map((Parking value) {
+                      .map((Parking? value) {
                     return DropdownMenuItem<String>(
-                      value: value.name,
+                      value: value!.name,
                       child: Text(value.name),
                     );
                   }).toList(),
