@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
+import 'package:parking_manager/app/features/parking/model/parking.dart';
 
 import '../../car/model/car.dart';
-import '../add_parking/model/parking.dart';
 
 class ParkingSpacePage extends StatelessWidget {
   final Parking parking;

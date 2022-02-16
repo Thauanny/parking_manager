@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../../car/model/car.dart';
+import '../../car/model/car.dart';
 
 class Parking {
   final String name;

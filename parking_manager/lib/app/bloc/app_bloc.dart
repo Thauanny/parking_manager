@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import '../config/shared_preferences_config.dart';
 
 import '../features/car/model/car.dart';
-import '../features/parking/add_parking/model/parking.dart';
+import '../features/parking/model/parking.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -34,11 +34,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       } catch (e) {
         yield AddPakingToListError();
       }
-
-      // sharedPreferencesConfig.noteListWithDeadline.add(
-      //  Note(message: event.message, date: event.date, type: event.type));
-      //  sharedPreferencesConfig.setNotes(event.type);
-
     } else if (event is AddCarToParkingList) {
       try {
         var parking = sharedPreferencesConfig!.parkings
