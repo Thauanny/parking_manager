@@ -1,4 +1,4 @@
-import '../features/add_parking/model/parking.dart';
+import '../features/parking/add_parking/model/parking.dart';
 
 bool isParkingSpaceFree(Parking parking, String text, String value) =>
     (parking.cars!.any((element) =>

@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import '../config/shared_preferences_config.dart';
-import '../features/add_car/model/cars.dart';
-import '../features/add_parking/model/parking.dart';
+
+import '../features/car/model/car.dart';
+import '../features/parking/add_parking/model/parking.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';

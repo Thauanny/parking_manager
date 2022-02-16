@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parking_manager/app/features/add_parking/model/parking.dart';
 
 import '../bloc/app_bloc.dart';
 import '../config/colors.dart';
-import '../features/add_car/model/cars.dart';
+
+import '../features/car/model/car.dart';
+import '../features/parking/add_parking/model/parking.dart';
 import '../utils/enum_type_operation_form.dart';
 import '../utils/enum_value_text_option.dart';
 import '../utils/is_parking_space_free.dart';

@@ -1,9 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../bloc/app_bloc.dart';
-import '../features/add_car/model/cars.dart';
-import '../features/add_parking/model/parking.dart';
+
 import 'package:collection/collection.dart';
+
+import '../features/car/model/car.dart';
+import '../features/parking/add_parking/model/parking.dart';
 
 class SharedPreferencesConfig extends AppBloc {
   SharedPreferences? _prefs;

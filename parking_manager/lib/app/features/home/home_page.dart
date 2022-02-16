@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parking_manager/app/features/add_car/add_car_provider.dart';
+
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import '../../bloc/app_bloc.dart';
 
 import '../../config/colors.dart';
-import '../add_parking/add_parking_provider.dart';
-import '../history/history_provider.dart';
+
+import '../car/add_car/add_car_provider.dart';
+import '../car/car_history/history_provider.dart';
+import '../parking/add_parking/add_parking_provider.dart';
 import '../parking/parking_select/parking_select_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -161,7 +163,7 @@ void checkRoute(BuildContext context, String option, AppBloc appBloc) {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => HistoryProvider(
+            builder: (context) => CarHistoryProvider(
                   appBloc: appBloc,
                 )),
       );
