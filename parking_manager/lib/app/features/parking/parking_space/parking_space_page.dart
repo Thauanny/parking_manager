@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parking_manager/app/bloc/app_bloc.dart';
+
 import 'package:parking_manager/app/config/colors.dart';
 import 'package:parking_manager/app/features/parking/model/parking.dart';
 
+import '../../car/bloc/car_bloc.dart';
 import '../../car/model/car.dart';
+import '../bloc/parking_bloc.dart';
 
 class ParkingSpacePage extends StatelessWidget {
   final Parking parking;
@@ -12,7 +14,9 @@ class ParkingSpacePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appBloc = BlocProvider.of<AppBloc>(context);
+    final carBloc = BlocProvider.of<CarBloc>(context);
+
+    final parkingBloc = BlocProvider.of<ParkingBloc>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -21,19 +25,20 @@ class ParkingSpacePage extends StatelessWidget {
       ),
       body: WillPopScope(
         onWillPop: () {
-          appBloc.add(MakeAddInital());
+          carBloc.add(MakeCarInital());
+          parkingBloc.add(MakeParkingInital());
           return Future.value(true);
         },
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: BlocBuilder<AppBloc, AppState>(
+          child: BlocBuilder<CarBloc, CarState>(
             builder: (context, state) {
-              if (state is RemoveCarFromParkingRemoving) {
+              if (state is CarRemoveCarFromParkingRemoving) {
                 return Center(
                     child: CircularProgressIndicator(
                   color: mainColor,
                 ));
-              } else if (state is RemoveCarFromParkingError) {
+              } else if (state is CarRemoveCarFromParkingError) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -42,9 +47,29 @@ class ParkingSpacePage extends StatelessWidget {
                     ),
                   );
                 });
-                return gridViewCars(context: context, appBloc: appBloc);
+                return gridViewCars(
+                    context: context,
+                    carBloc: carBloc,
+                    parkingBloc: parkingBloc);
+              } else if (state is CarRemoveCarFromParkingRemoved) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text(
+                          "Vaga liberada com sucesso! Carro fez checkout!"),
+                    ),
+                  );
+                });
+                return gridViewCars(
+                    context: context,
+                    carBloc: carBloc,
+                    parkingBloc: parkingBloc);
               } else {
-                return gridViewCars(context: context, appBloc: appBloc);
+                return gridViewCars(
+                    context: context,
+                    carBloc: carBloc,
+                    parkingBloc: parkingBloc);
               }
             },
           ),
@@ -55,8 +80,8 @@ class ParkingSpacePage extends StatelessWidget {
 
   Car? _returnCarOrFreeSpace({required int index}) {
     try {
-      var car =
-          parking.cars!.firstWhere((element) => element.parkedIn == index + 1);
+      var car = parking.cars!.firstWhere((element) =>
+          element.parkedIn == index + 1 && parking.name == element.parkingName);
 
       return car;
     } catch (e) {
@@ -65,7 +90,9 @@ class ParkingSpacePage extends StatelessWidget {
   }
 
   Widget gridViewCars(
-          {required BuildContext context, required AppBloc appBloc}) =>
+          {required BuildContext context,
+          required CarBloc carBloc,
+          required ParkingBloc parkingBloc}) =>
       GridView.builder(
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -101,13 +128,12 @@ class ParkingSpacePage extends StatelessWidget {
                           car != null
                               ? IconButton(
                                   onPressed: () {
-                                    var _parking = appBloc
-                                        .sharedPreferencesConfig!.parkings
-                                        .firstWhere((element) =>
-                                            element!.name == parking.name);
-                                    appBloc.add(RemoveCarFromParking(
-                                        index: _parking!.cars!.indexOf(car),
-                                        parking: _parking));
+                                    _showDialog(
+                                        context: context,
+                                        carBloc: carBloc,
+                                        car: car,
+                                        parking: parking,
+                                        parkingBloc: parkingBloc);
                                   },
                                   icon: const Icon(
                                     Icons.delete_forever,
@@ -167,3 +193,78 @@ class ParkingSpacePage extends StatelessWidget {
         },
       );
 }
+
+void _showDialog(
+    {required BuildContext context,
+    required CarBloc carBloc,
+    required Parking parking,
+    required ParkingBloc parkingBloc,
+    required Car car}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        actions: <Widget>[
+          _buttonOption(
+              text: 'Liberar vaga e dar checkout para este carro',
+              context: context,
+              carBloc: carBloc,
+              car: car,
+              parking: parking,
+              parkingBloc: parkingBloc),
+          _buttonOption(
+              text: 'Cancelar',
+              context: context,
+              carBloc: carBloc,
+              car: car,
+              parking: parking,
+              parkingBloc: parkingBloc)
+        ],
+      );
+    },
+  );
+}
+
+Widget _buttonOption(
+        {required String text,
+        required BuildContext context,
+        required CarBloc carBloc,
+        required Parking parking,
+        required ParkingBloc parkingBloc,
+        required Car car}) =>
+    InkWell(
+      onTap: () {
+        if (!text.contains('Cancelar')) {
+          carBloc.add(CarRemoveCarFromParking(
+              index: parking.cars!.indexOf(car), parking: parking));
+        }
+
+        Navigator.pop(context);
+      },
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 9,
+        width: MediaQuery.of(context).size.width - 50,
+        child: Card(
+          color: mainColor,
+          child: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 250,
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 19),
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );

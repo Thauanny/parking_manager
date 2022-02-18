@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parking_manager/app/bloc/app_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
+import 'package:parking_manager/app/features/parking/bloc/parking_bloc.dart';
 
+import '../../car/bloc/car_bloc.dart';
 import '../parking_space/parking_space_provider.dart';
 
 class ParkingSelectPage extends StatelessWidget {
@@ -10,7 +12,10 @@ class ParkingSelectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final carBloc = BlocProvider.of<CarBloc>(context);
     final appBloc = BlocProvider.of<AppBloc>(context);
+    final parkingBloc = BlocProvider.of<ParkingBloc>(context);
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -19,14 +24,15 @@ class ParkingSelectPage extends StatelessWidget {
         ),
         body: WillPopScope(
           onWillPop: () {
-            appBloc.add(MakeAddInital());
+            parkingBloc.add(MakeParkingInital());
+            carBloc.add(MakeCarInital());
             return Future.value(true);
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              appBloc.sharedPreferencesConfig!.parkings.isEmpty
+              parkingBloc.sharedPreferencesConfig!.parkings.isEmpty
                   ? Center(
                       child: Column(
                       children: [
@@ -50,9 +56,9 @@ class ParkingSelectPage extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Padding(
                         padding: const EdgeInsets.all(50.0),
-                        child: BlocBuilder<AppBloc, AppState>(
+                        child: BlocBuilder<ParkingBloc, ParkingState>(
                             builder: (context, state) {
-                          if (state is RemoveParkingRemoved) {
+                          if (state is ParkingRemoveParkingRemoved) {
                             WidgetsBinding.instance!.addPostFrameCallback((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -61,8 +67,11 @@ class ParkingSelectPage extends StatelessWidget {
                                 ),
                               );
                             });
-                            return listOfParkings(appBloc: appBloc);
-                          } else if (state is RemoveParkingError) {
+                            return listOfParkings(
+                                appBloc: appBloc,
+                                carBloc: carBloc,
+                                parkingBloc: parkingBloc);
+                          } else if (state is ParkingRemoveParkingError) {
                             WidgetsBinding.instance!.addPostFrameCallback((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -72,9 +81,12 @@ class ParkingSelectPage extends StatelessWidget {
                                 ),
                               );
                             });
-                            return listOfParkings(appBloc: appBloc);
+                            return listOfParkings(
+                                appBloc: appBloc,
+                                carBloc: carBloc,
+                                parkingBloc: parkingBloc);
                           } else {
-                            return appBloc
+                            return parkingBloc
                                     .sharedPreferencesConfig!.parkings.isEmpty
                                 ? Center(
                                     child: Column(
@@ -94,7 +106,10 @@ class ParkingSelectPage extends StatelessWidget {
                                       )
                                     ],
                                   ))
-                                : listOfParkings(appBloc: appBloc);
+                                : listOfParkings(
+                                    appBloc: appBloc,
+                                    carBloc: carBloc,
+                                    parkingBloc: parkingBloc);
                           }
                         }),
                       ),
@@ -104,77 +119,83 @@ class ParkingSelectPage extends StatelessWidget {
         ));
   }
 
-  Widget listOfParkings({required AppBloc appBloc}) => ListView.builder(
-      itemCount: appBloc.sharedPreferencesConfig!.parkings.length,
-      itemBuilder: (context, index) => InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ParkingSpaceProvider(
-                      appBloc: appBloc,
-                      parking: appBloc.sharedPreferencesConfig!.parkings
-                          .elementAt(index)),
-                ),
-              );
-            },
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height / 10,
-              width: MediaQuery.of(context).size.width - 50,
-              child: Card(
-                color: mainColor,
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
+  Widget listOfParkings(
+          {required AppBloc appBloc,
+          required CarBloc carBloc,
+          required ParkingBloc parkingBloc}) =>
+      ListView.builder(
+          itemCount: parkingBloc.sharedPreferencesConfig!.parkings.length,
+          itemBuilder: (context, index) => InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ParkingSpaceProvider(
+                          parkingBloc: parkingBloc,
+                          carBloc: carBloc,
+                          appBloc: appBloc,
+                          parking: parkingBloc.sharedPreferencesConfig!.parkings
+                              .elementAt(index)),
+                    ),
+                  );
+                },
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height / 10,
+                  width: MediaQuery.of(context).size.width - 50,
+                  child: Card(
+                    color: mainColor,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              appBloc.add(
-                                RemoveParking(
-                                  parking: appBloc
-                                      .sharedPreferencesConfig!.parkings
-                                      .elementAt(index),
-                                ),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.delete_forever,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: Text(
-                              appBloc.sharedPreferencesConfig!.parkings
-                                  .elementAt(index)!
-                                  .name,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  parkingBloc.add(
+                                    ParkingRemoveParking(
+                                      parking: parkingBloc
+                                          .sharedPreferencesConfig!.parkings
+                                          .elementAt(index),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.delete_forever,
                                   color: Colors.white,
-                                  fontSize: 20),
-                              overflow: TextOverflow.clip,
-                            ),
+                                  size: 30,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 200,
+                                child: Text(
+                                  parkingBloc.sharedPreferencesConfig!.parkings
+                                      .elementAt(index)!
+                                      .name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 20),
+                                  overflow: TextOverflow.clip,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.local_parking_rounded,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.local_parking_rounded,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ));
+              ));
 }

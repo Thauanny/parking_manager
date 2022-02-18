@@ -7,6 +7,7 @@ import 'package:parking_manager/app/utils/enum_type_operation_form.dart';
 import '../../../bloc/app_bloc.dart';
 import '../../../shared/text_form_field_custom.dart';
 import '../../parking/model/parking.dart';
+import '../bloc/car_bloc.dart';
 
 class AddCarPage extends StatefulWidget {
   const AddCarPage({Key? key}) : super(key: key);
@@ -19,7 +20,8 @@ class _AddCarPageState extends State<AddCarPage> {
   String? _value = 'vazio';
   @override
   Widget build(BuildContext context) {
-    final appBloc = BlocProvider.of<AppBloc>(context);
+    final carBloc = BlocProvider.of<CarBloc>(context);
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: mainColor,
@@ -27,7 +29,8 @@ class _AddCarPageState extends State<AddCarPage> {
         ),
         body: WillPopScope(
           onWillPop: () {
-            appBloc.add(MakeAddInital());
+            carBloc.add(MakeCarInital());
+
             return Future.value(true);
           },
           child: ListView(
@@ -43,7 +46,7 @@ class _AddCarPageState extends State<AddCarPage> {
                       _value = newValue;
                     });
                   },
-                  items: appBloc.sharedPreferencesConfig!.parkings
+                  items: carBloc.sharedPreferencesConfigParking!.parkings
                       .map((Parking? value) {
                     return DropdownMenuItem<String>(
                       value: value!.name,
@@ -63,7 +66,7 @@ class _AddCarPageState extends State<AddCarPage> {
                     TextInputType.name,
                     TextInputType.number
                   ],
-                  listNanme: appBloc.sharedPreferencesConfig!.parkings,
+                  listNanme: carBloc.sharedPreferencesConfigParking!.parkings,
                   option: TypeOperationForm.addCar,
                   title3: 'Vaga em que o carro ficará',
                   hintText3: 'Escreva aqui a vaga em que esse carro ficará'),

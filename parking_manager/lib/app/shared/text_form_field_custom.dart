@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../config/colors.dart';
 
+import '../features/car/bloc/car_bloc.dart';
 import '../features/car/model/car.dart';
+import '../features/parking/bloc/parking_bloc.dart';
 import '../features/parking/model/parking.dart';
 import '../utils/enum_type_operation_form.dart';
 import '../utils/enum_value_text_option.dart';
@@ -53,14 +55,15 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
 
   @override
   Widget build(BuildContext context) {
-    final appBloc = BlocProvider.of<AppBloc>(context);
+    final carBloc = BlocProvider.of<CarBloc>(context);
+    final parkingBloc = BlocProvider.of<ParkingBloc>(context);
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           Text(
-            appBloc.sharedPreferencesConfig!.parkings.isEmpty &&
+            parkingBloc.sharedPreferencesConfig!.parkings.isEmpty &&
                     widget.option != TypeOperationForm.addParking
                 ? 'Adicione estacionamentos antes!'
                 : widget.value == 'vazio'
@@ -68,9 +71,9 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     : '',
             style: const TextStyle(color: Color.fromARGB(255, 223, 13, 9)),
           ),
-          BlocBuilder<AppBloc, AppState>(
+          BlocBuilder<ParkingBloc, ParkingState>(
             builder: (context, state) {
-              if (state is AddPakingToListAdded) {
+              if (state is ParkingAddPakingToListAdded) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -80,7 +83,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     ),
                   );
                 });
-              } else if (state is AddPakingToListError) {
+              } else if (state is ParkingAddPakingToListError) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -90,26 +93,7 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                     ),
                   );
                 });
-              } else if (state is AddCarToParkingListAdded) {
-                WidgetsBinding.instance!.addPostFrameCallback((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.green,
-                      content: Text("Carro salvo no estacionamento"),
-                    ),
-                  );
-                });
-              } else if (state is AddCarToParkingListError) {
-                WidgetsBinding.instance!.addPostFrameCallback((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.red,
-                      content: Text(
-                          "Falha ao adicionar carro, reveja as informações e tente novamente"),
-                    ),
-                  );
-                });
-              } else if (state is AddPakingToListErrorAlreadyExist) {
+              } else if (state is ParkingAddPakingToListErrorAlreadyExist) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -120,119 +104,146 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
                   );
                 });
               }
-              return Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    _title(title: widget.title1),
-                    _textFormField(
-                        hintText: widget.hintText1,
-                        textInputType: widget.keyboardTypes.elementAt(0),
-                        valueTextOption: ValueTextOption.first),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 10,
-                    ),
-                    _title(title: widget.title2),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _textFormField(
-                        hintText: widget.hintText2,
-                        textInputType: widget.keyboardTypes.elementAt(1),
-                        valueTextOption: ValueTextOption.second),
-                    widget.title3 != null
-                        ? Column(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height / 10,
-                              ),
-                              _title(title: widget.title3!),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              _textFormField(
-                                  hintText: widget.hintText3!,
-                                  textInputType:
-                                      widget.keyboardTypes.elementAt(2),
-                                  valueTextOption: ValueTextOption.third),
-                            ],
-                          )
-                        : Container(),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height / 10),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          fixedSize: const Size(320, 57),
-                          primary: Colors.white,
-                          backgroundColor: mainColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
+              return BlocBuilder<CarBloc, CarState>(
+                builder: (context, state) {
+                  if (state is CarAddCarToParkingListAdded) {
+                    WidgetsBinding.instance!.addPostFrameCallback((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("Carro salvo no estacionamento"),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate() &&
-                              widget.value != 'vazio') {
-                            if (widget.option == TypeOperationForm.addParking) {
-                              try {
-                                appBloc.add(
-                                  AddPakingToList(
-                                    parking: Parking(
-                                        coutParkingSpaces:
-                                            int.parse(valueSecondInput),
-                                        name: valueFirstInput,
-                                        cars: <Car>[]),
-                                  ),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
-                                  ),
-                                );
-                              }
-                            } else if (widget.option ==
-                                TypeOperationForm.addCar) {
-                              try {
-                                appBloc.add(
-                                  AddCarToParkingList(
-                                      car: Car(
-                                          checkIn: DateTime.now(),
-                                          modelAndColor: valueFirstInput,
-                                          licensePlate: valueSecondInput,
-                                          parkedIn: int.parse(valueThirdInput),
-                                          parkingName: widget.value),
-                                      value: widget.value),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        "Falha ao adicionar carro, reveja as informações e tente novamente"),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        child: const Text(
-                          'Salvar',
-                          style: TextStyle(
-                            fontSize: 22,
-                          ),
-                          textAlign: TextAlign.center,
+                      );
+                    });
+                  } else if (state is CarAddCarToParkingListError) {
+                    WidgetsBinding.instance!.addPostFrameCallback((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text(
+                              "Falha ao adicionar carro, reveja as informações e tente novamente"),
                         ),
-                      ),
-                    )
-                  ],
-                ),
+                      );
+                    });
+                  }
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        _title(title: widget.title1),
+                        _textFormField(
+                            hintText: widget.hintText1,
+                            textInputType: widget.keyboardTypes.elementAt(0),
+                            valueTextOption: ValueTextOption.first),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 10,
+                        ),
+                        _title(title: widget.title2),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        _textFormField(
+                            hintText: widget.hintText2,
+                            textInputType: widget.keyboardTypes.elementAt(1),
+                            valueTextOption: ValueTextOption.second),
+                        widget.title3 != null
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height / 10,
+                                  ),
+                                  _title(title: widget.title3!),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  _textFormField(
+                                      hintText: widget.hintText3!,
+                                      textInputType:
+                                          widget.keyboardTypes.elementAt(2),
+                                      valueTextOption: ValueTextOption.third),
+                                ],
+                              )
+                            : Container(),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height / 10),
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              fixedSize: const Size(320, 57),
+                              primary: Colors.white,
+                              backgroundColor: mainColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate() &&
+                                  widget.value != 'vazio') {
+                                if (widget.option ==
+                                    TypeOperationForm.addParking) {
+                                  try {
+                                    parkingBloc.add(
+                                      ParkingAddPakingToList(
+                                        parking: Parking(
+                                            coutParkingSpaces:
+                                                int.parse(valueSecondInput),
+                                            name: valueFirstInput,
+                                            cars: <Car>[]),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                            "Falha ao adicionar Estacionamento, reveja as informações e tente novamente"),
+                                      ),
+                                    );
+                                  }
+                                } else if (widget.option ==
+                                    TypeOperationForm.addCar) {
+                                  try {
+                                    carBloc.add(
+                                      CarAddCarToParkingList(
+                                          car: Car(
+                                              checkIn: DateTime.now(),
+                                              modelAndColor: valueFirstInput,
+                                              licensePlate: valueSecondInput,
+                                              parkedIn:
+                                                  int.parse(valueThirdInput),
+                                              parkingName: widget.value),
+                                          value: widget.value),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                            "Falha ao adicionar carro, reveja as informações e tente novamente"),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                            child: const Text(
+                              'Salvar',
+                              style: TextStyle(
+                                fontSize: 22,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
               );
             },
           )
@@ -266,8 +277,8 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
           }
 
           if (valueTextOption == ValueTextOption.third) {
-            final blocApp = BlocProvider.of<AppBloc>(context);
-            var parking = blocApp.sharedPreferencesConfig!.parkings
+            final parkingBloc = BlocProvider.of<ParkingBloc>(context);
+            var parking = parkingBloc.sharedPreferencesConfig!.parkings
                 .firstWhere((element) => element!.name == widget.value);
             if (value.isNotEmpty &&
                 int.parse(value) <= parking!.coutParkingSpaces) {
@@ -287,10 +298,10 @@ class _TextFormFielDCustomState extends State<TextFormFielDCustom> {
         keyboardType: textInputType,
         textAlign: TextAlign.center,
         validator: (text) {
-          var blocApp = BlocProvider.of<AppBloc>(context);
+          var parkingBloc = BlocProvider.of<ParkingBloc>(context);
           Parking? parking;
           if (valueTextOption == ValueTextOption.third) {
-            parking = blocApp.sharedPreferencesConfig!.parkings
+            parking = parkingBloc.sharedPreferencesConfig!.parkings
                 .firstWhere((element) => element!.name == widget.value);
           }
 

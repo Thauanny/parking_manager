@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../../car/model/car.dart';
 
 class Parking {
+  int id = DateTime.now().microsecond;
   final String name;
   final int coutParkingSpaces;
   List<Car>? cars;

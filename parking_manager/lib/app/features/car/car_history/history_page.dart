@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parking_manager/app/bloc/app_bloc.dart';
 import 'package:parking_manager/app/config/colors.dart';
-
 import 'package:parking_manager/app/features/car/model/car.dart';
 
 import '../../../utils/date_time_format.dart';
+import '../bloc/car_bloc.dart';
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({
+class CarHistoryPage extends StatelessWidget {
+  const CarHistoryPage({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appBloc = BlocProvider.of<AppBloc>(context);
-    final _cars = appBloc.sharedPreferencesConfig!.history;
+    final carAppBloc = BlocProvider.of<CarBloc>(context);
+    final _cars = carAppBloc.sharedPreferencesConfig!.history;
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () => appBloc.add(ClearHistory()),
+            onPressed: () {
+              _showDialog(context, carAppBloc);
+            },
             icon: const Icon(Icons.delete_forever, color: Colors.white),
           )
         ],
@@ -30,14 +31,14 @@ class HistoryPage extends StatelessWidget {
       ),
       body: WillPopScope(
         onWillPop: () {
-          appBloc.add(MakeAddInital());
+          carAppBloc.add(MakeCarInital());
           return Future.value(true);
         },
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: BlocBuilder<AppBloc, AppState>(
+          child: BlocBuilder<CarBloc, CarState>(
             builder: (context, state) {
-              if (state is ClearHistorySucess) {
+              if (state is CarClearHistorySucess) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -47,7 +48,7 @@ class HistoryPage extends StatelessWidget {
                   );
                 });
                 return listOfCards(cars: _cars);
-              } else if (state is ClearHistoryError) {
+              } else if (state is CarClearHistoryError) {
                 WidgetsBinding.instance!.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -193,4 +194,57 @@ class HistoryPage extends StatelessWidget {
       ),
     );
   }
+
+  void _showDialog(BuildContext context, CarBloc carBloc) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          actions: <Widget>[
+            _buttonOption("Apagar tudo", context, carBloc),
+            _buttonOption(
+                "Apagar somentes os que ja fizeram checkout", context, carBloc)
+          ],
+        );
+      },
+    );
+  }
 }
+
+Widget _buttonOption(String text, BuildContext context, CarBloc carBloc) =>
+    InkWell(
+      onTap: () {
+        if (text.contains("tudo")) {
+          carBloc.add(CarClearHistory());
+        } else {
+          carBloc.add(CarClearCheckoutHistory());
+        }
+        Navigator.pop(context);
+      },
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 9,
+        width: MediaQuery.of(context).size.width - 50,
+        child: Card(
+          color: mainColor,
+          child: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 200,
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 19),
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
