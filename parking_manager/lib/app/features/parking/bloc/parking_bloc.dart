@@ -41,13 +41,10 @@ class ParkingBloc extends Bloc<ParkingEvent, ParkingState> {
       }
     } else if (event is ParkingRemoveParking) {
       try {
-        print(sharedPreferencesConfig!.parkings);
-
         sharedPreferencesConfig!.parkings
             .removeWhere((element) => element!.id == event.parking!.id);
-        print(sharedPreferencesConfig!.parkings);
+
         sharedPreferencesConfig!.setHistoryAndParkings('parking');
-        print(sharedPreferencesConfig!.parkings);
 
         yield ParkingRemoveParkingRemoved();
       } catch (e) {

@@ -59,27 +59,36 @@ class CarBloc extends Bloc<CarEvent, CarState> {
       try {
         var _parking = event.parking;
 
-        var car = _parking.cars!.elementAt(event.index);
-
         sharedPreferencesConfig!.history
             .firstWhere((element) =>
-                element.parkedIn == car.parkedIn &&
-                element.parkingName == car.parkingName)
+                element.parkedIn == event.car.parkedIn &&
+                element.parkingName == event.car.parkingName)
             .checkOut = DateTime.now();
 
         if (_parking.cars != null) {
           _parking.cars!
               .firstWhere((element) =>
-                  element.parkedIn == car.parkedIn &&
-                  element.parkingName == car.parkingName)
+                  element.parkedIn == event.car.parkedIn &&
+                  element.parkingName == event.car.parkingName &&
+                  element.licensePlate == event.car.licensePlate)
               .checkOut = DateTime.now();
         }
 
         sharedPreferencesConfig!.setHistoryAndParkings('history');
-        sharedPreferencesConfigParking!.parkings
-            .firstWhere((element) => element!.name == event.parking.name)!
-            .cars!
-            .removeAt(event.index);
+
+        var parking = sharedPreferencesConfigParking!.parkings
+            .firstWhere((element) => element!.name == event.parking.name);
+        if (parking != null && parking.cars != null) {
+          parking.cars!.removeWhere((element) =>
+              element.parkedIn == event.car.parkedIn &&
+              element.parkingName == event.car.parkingName &&
+              element.licensePlate == event.car.licensePlate);
+        }
+        _parking.cars!.removeWhere((element) =>
+            element.parkedIn == event.car.parkedIn &&
+            element.parkingName == event.car.parkingName &&
+            element.licensePlate == event.car.licensePlate);
+
         sharedPreferencesConfigParking!.setHistoryAndParkings('parking');
 
         yield CarRemoveCarFromParkingRemoved();

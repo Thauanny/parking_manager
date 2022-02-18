@@ -15,11 +15,11 @@ class CarAddCarToParkingList extends CarEvent {
 }
 
 class CarRemoveCarFromParking extends CarEvent {
-  final int index;
+  final Car car;
   final Parking parking;
 
   CarRemoveCarFromParking({
-    required this.index,
+    required this.car,
     required this.parking,
   });
 }

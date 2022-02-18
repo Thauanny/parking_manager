@@ -78,10 +78,11 @@ class ParkingSpacePage extends StatelessWidget {
     );
   }
 
-  Car? _returnCarOrFreeSpace({required int index}) {
+  Car? _returnCarOrFreeSpace({required int index, required Parking parking_}) {
     try {
-      var car = parking.cars!.firstWhere((element) =>
-          element.parkedIn == index + 1 && parking.name == element.parkingName);
+      var car = parking_.cars!.firstWhere((element) =>
+          element.parkedIn == index + 1 &&
+          parking_.name == element.parkingName);
 
       return car;
     } catch (e) {
@@ -102,7 +103,10 @@ class ParkingSpacePage extends StatelessWidget {
         ),
         itemCount: parking.coutParkingSpaces,
         itemBuilder: (context, index) {
-          var car = _returnCarOrFreeSpace(index: index);
+          var car = _returnCarOrFreeSpace(
+              index: index,
+              parking_: parkingBloc.sharedPreferencesConfig!.parkings
+                  .firstWhere((element) => element!.name == parking.name)!);
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -235,8 +239,7 @@ Widget _buttonOption(
     InkWell(
       onTap: () {
         if (!text.contains('Cancelar')) {
-          carBloc.add(CarRemoveCarFromParking(
-              index: parking.cars!.indexOf(car), parking: parking));
+          carBloc.add(CarRemoveCarFromParking(car: car, parking: parking));
         }
 
         Navigator.pop(context);
